@@ -1,0 +1,264 @@
+@import 'tailwindcss';
+
+/* =============================================================
+   Token desain Razeline Komputer
+   ============================================================= */
+@theme {
+  --color-brand-50: #eef4fa;
+  --color-brand-100: #d5e5f2;
+  --color-brand-200: #adcbe4;
+  --color-brand-300: #7aa9d0;
+  --color-brand-400: #4581b4;
+  --color-brand-500: #1f5f96;
+  --color-brand-600: #0f4c81;
+  --color-brand-700: #0c3d68;
+  --color-brand-800: #0a3153;
+  --color-brand-900: #072339;
+
+  --color-ink-900: #101828;
+  --color-ink-700: #344054;
+  --color-ink-500: #667085;
+  --color-ink-300: #98a2b3;
+  --color-line: #e4e7ec;
+  --color-surface: #ffffff;
+  --color-surface-2: #f7f9fb;
+
+  --color-promo: #c9252d;
+  --color-ok: #157347;
+  --color-warn: #b54708;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --radius-xl2: 0.875rem;
+}
+
+/* =============================================================
+   Dasar
+   ============================================================= */
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Sembunyikan scrollbar pada baris produk yang digeser. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* =============================================================
+   Komponen yang dipakai berulang
+   ============================================================= */
+@layer components {
+  .container-page {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 80rem;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) {
+    .container-page {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.6875rem 1.125rem;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: var(--color-brand-600);
+    color: #fff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-brand-700);
+  }
+
+  .btn-secondary {
+    background: var(--color-brand-50);
+    color: var(--color-brand-700);
+    border: 1px solid var(--color-brand-100);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--color-brand-100);
+  }
+
+  .btn-outline {
+    background: #fff;
+    color: var(--color-ink-700);
+    border: 1px solid var(--color-line);
+  }
+  .btn-outline:hover:not(:disabled) {
+    background: var(--color-surface-2);
+    border-color: var(--color-ink-300);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-ink-700);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--color-surface-2);
+  }
+
+  .btn-sm {
+    padding: 0.5rem 0.8125rem;
+    font-size: 0.8125rem;
+  }
+  .btn-lg {
+    padding: 0.8125rem 1.5rem;
+    font-size: 0.9375rem;
+  }
+
+  .field {
+    width: 100%;
+    border: 1px solid var(--color-line);
+    border-radius: 0.625rem;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+    background: #fff;
+    color: var(--color-ink-900);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .field::placeholder {
+    color: var(--color-ink-300);
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-brand-400);
+    box-shadow: 0 0 0 3px rgb(15 76 129 / 0.12);
+  }
+  .field:disabled {
+    background: var(--color-surface-2);
+    color: var(--color-ink-500);
+  }
+  textarea.field {
+    resize: vertical;
+    min-height: 5rem;
+  }
+
+  .label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-ink-700);
+    margin-bottom: 0.375rem;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-xl2);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    background: #fff;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-ink-700);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .chip:hover {
+    border-color: var(--color-brand-300);
+    background: var(--color-brand-50);
+  }
+  .chip-active {
+    background: var(--color-brand-600);
+    border-color: var(--color-brand-600);
+    color: #fff;
+  }
+  .chip-active:hover {
+    background: var(--color-brand-700);
+    border-color: var(--color-brand-700);
+  }
+
+  .price {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, #eef0f3 25%, #f6f7f9 50%, #eef0f3 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite linear;
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+}
