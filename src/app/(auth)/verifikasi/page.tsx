@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 
 import { FormVerifikasi } from '@/components/form-verifikasi';
 import { Icon } from '@/components/icon';
+import { OTP_PELANGGAN_AKTIF } from '@/lib/fitur';
 import { bacaParam, type ParamPencarian } from '@/lib/url';
 
 export const metadata: Metadata = {
@@ -16,6 +17,8 @@ export default async function HalamanVerifikasi({
 }: {
   searchParams: Promise<ParamPencarian>;
 }) {
+  if (!OTP_PELANGGAN_AKTIF) redirect('/masuk');
+
   const params = await searchParams;
   const email = bacaParam(params, 'email');
   const alasan = bacaParam(params, 'alasan');

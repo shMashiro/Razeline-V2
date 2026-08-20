@@ -94,6 +94,8 @@ Lalu isi `.env.local` dengan nilai dari dasbor Supabase
 | `SUPABASE_SERVICE_ROLE_KEY` | Kunci rahasia — **hanya dipakai di server** |
 | `SUPABASE_DB_URL` | String koneksi PostgreSQL, hanya untuk skrip migrasi |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` saat pengembangan |
+| `FITUR_OTP_PELANGGAN` | `on` untuk mewajibkan verifikasi email saat mendaftar. Bawaan: mati |
+| `FITUR_2FA_ADMIN` | `on` untuk mewajibkan autentikator pada akun admin. Bawaan: mati |
 
 > **Penting.** Bila komputer Anda menyimpan variabel `NEXT_PUBLIC_SUPABASE_URL`
 > atau `SUPABASE_SERVICE_ROLE_KEY` di level sistem operasi (misalnya sisa dari
@@ -152,16 +154,11 @@ npm run admin:buat -- admin@razelinekomputer.id "KataSandiYangKuat123"
 Skrip akan membuat akun (email langsung terverifikasi) dan memberinya peran admin.
 Bila emailnya sudah terdaftar, skrip hanya mengubah perannya.
 
-Setelah itu:
+Setelah itu masuk lewat `/masuk` menggunakan email dan kata sandi tersebut.
 
-1. Masuk lewat `/masuk`.
-2. Anda akan diarahkan ke `/admin/keamanan` — **verifikasi dua langkah wajib
-   diaktifkan** sebelum halaman admin lain bisa dibuka.
-3. Pindai kode QR dengan Google Authenticator, Authy, atau aplikasi sejenis,
-   lalu masukkan enam angka yang muncul.
-
-Sejak saat itu, setiap kali masuk, admin akan diminta kode dari aplikasi
-autentikator.
+Bila `FITUR_2FA_ADMIN=on`, Anda akan lebih dulu diarahkan ke `/admin/keamanan`
+untuk memindai kode QR dengan Google Authenticator, Authy, atau aplikasi
+sejenis. Selama sakelar itu mati, masuk cukup dengan email dan kata sandi.
 
 ### Kehilangan akses admin
 
@@ -220,7 +217,8 @@ Beberapa hal yang sudah diterapkan:
   memvalidasi voucher, memotong stok, dan membuat pesanan dalam satu transaksi.
 - **Pembatalan pesanan mengembalikan stok dan kuota voucher** lewat trigger.
 - **Pembatasan laju pemesanan:** maksimal 5 pesanan per nomor telepon per jam.
-- **Autentikasi dua langkah (TOTP) wajib untuk admin.**
+- **Autentikasi dua langkah (TOTP) untuk admin**, dapat dinyalakan lewat
+  `FITUR_2FA_ADMIN=on`.
 - **Content-Security-Policy berbasis nonce** beserta HSTS, `X-Frame-Options`,
   `X-Content-Type-Options`, `Referrer-Policy`, dan `Permissions-Policy`.
 - **Seluruh masukan pengguna divalidasi dengan Zod** sebelum menyentuh database.
@@ -236,9 +234,35 @@ npm run uji:keamanan
 > kebijakan keamanan. Simpan hanya sebagai variabel lingkungan di server, jangan
 > pernah memberinya awalan `NEXT_PUBLIC_`, dan jangan pernah mencommitnya.
 
+### Sakelar verifikasi tambahan
+
+Dua lapis pengamanan berikut **dimatikan secara bawaan** dan diatur lewat
+`src/lib/fitur.ts`:
+
+| Sakelar | Bila `on` | Bila mati (bawaan) |
+| --- | --- | --- |
+| `FITUR_OTP_PELANGGAN` | Pendaftaran mengirim kode 6 angka ke email, akun aktif setelah diverifikasi | Akun langsung aktif dan pengguna langsung masuk |
+| `FITUR_2FA_ADMIN` | Admin wajib mendaftarkan aplikasi autentikator dan memasukkan kodenya tiap kali masuk | Admin cukup memakai email dan kata sandi |
+
+Perlu diperhatikan selama keduanya mati:
+
+- Alamat email pendaftar **tidak diverifikasi**, jadi email pelanggan belum tentu
+  benar-benar miliknya. Nomor WhatsApp tetap jadi jalur konfirmasi utama.
+- Kata sandi menjadi satu-satunya pelindung akun admin. Pakai kata sandi panjang
+  yang tidak dipakai di layanan lain.
+- Karena akun dibuat memakai kunci layanan, pendaftaran dibatasi
+  **20 akun baru per jam** agar tidak bisa dipakai membuat akun massal.
+
+Menyalakan kembali cukup mengubah nilainya menjadi `on` lalu menjalankan ulang
+aplikasi — tidak ada kode yang perlu diubah. Perangkat autentikator yang sudah
+terdaftar tetap tersimpan dan langsung berlaku lagi.
+
 ---
 
 ## Menyiapkan email verifikasi
+
+> Bagian ini hanya berlaku bila `FITUR_OTP_PELANGGAN=on`. Secara bawaan
+> verifikasi email dimatikan dan langkah di bawah tidak diperlukan.
 
 Pendaftaran pelanggan memakai kode OTP enam angka yang dikirim lewat email.
 Agar kodenya ikut terkirim, ubah templat email di Supabase

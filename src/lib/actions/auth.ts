@@ -4,8 +4,29 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import { SITE_URL } from '@/lib/env';
+import { DUA_LANGKAH_ADMIN_AKTIF, OTP_PELANGGAN_AKTIF } from '@/lib/fitur';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { skemaTelepon } from '@/lib/validation';
+
+const BATAS_PENDAFTARAN_PER_JAM = 20;
+
+/**
+ * Membatasi jumlah akun baru per jam. Dipakai saat verifikasi email
+ * dimatikan, karena akun dibuat lewat kunci layanan yang tidak punya
+ * pembatas bawaan seperti pendaftaran biasa.
+ */
+async function pendaftaranMelebihiBatas(): Promise<boolean> {
+  const admin = createSupabaseAdminClient();
+  const sejam = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+
+  const { count } = await admin
+    .from('profiles')
+    .select('id', { count: 'exact', head: true })
+    .gte('created_at', sejam);
+
+  return (count ?? 0) >= BATAS_PENDAFTARAN_PER_JAM;
+}
 
 export interface StatusForm {
   galat?: string;
@@ -43,6 +64,46 @@ export async function daftar(_sebelumnya: StatusForm, formData: FormData): Promi
   }
 
   const supabase = await createSupabaseServerClient();
+
+  // Verifikasi email dimatikan: akun langsung dibuat aktif lalu pengguna
+  // dimasukkan ke sesinya. Pembuatan akun tetap dibatasi lajunya supaya
+  // jalur ini tidak dipakai membuat akun secara massal.
+  if (!OTP_PELANGGAN_AKTIF) {
+    if (await pendaftaranMelebihiBatas()) {
+      return {
+        galat:
+          'Pendaftaran sedang dibatasi sementara. Silakan coba lagi beberapa saat lagi atau hubungi admin toko.',
+      };
+    }
+
+    const admin = createSupabaseAdminClient();
+    const { error: galatBuat } = await admin.auth.admin.createUser({
+      email: hasil.data.email,
+      password: hasil.data.password,
+      email_confirm: true,
+      user_metadata: { full_name: hasil.data.full_name, phone: hasil.data.phone },
+    });
+
+    if (galatBuat) {
+      return {
+        galat:
+          galatBuat.code === 'email_exists' || galatBuat.status === 422
+            ? 'Email ini sudah terdaftar. Silakan masuk atau gunakan email lain.'
+            : 'Pendaftaran gagal. Silakan coba lagi.',
+      };
+    }
+
+    const { error: galatMasuk } = await supabase.auth.signInWithPassword({
+      email: hasil.data.email,
+      password: hasil.data.password,
+    });
+    if (galatMasuk) {
+      return { galat: 'Akun berhasil dibuat, tetapi gagal masuk. Silakan masuk secara manual.' };
+    }
+
+    redirect('/akun');
+  }
+
   const { error } = await supabase.auth.signUp({
     email: hasil.data.email,
     password: hasil.data.password,
@@ -89,15 +150,23 @@ export async function masuk(_sebelumnya: StatusForm, formData: FormData): Promis
 
   if (error) {
     if (error.code === 'email_not_confirmed') {
+      if (!OTP_PELANGGAN_AKTIF) {
+        return {
+          galat:
+            'Akun ini dibuat saat verifikasi email masih menyala dan belum diverifikasi. Hubungi admin toko untuk mengaktifkannya.',
+        };
+      }
       redirect(`/verifikasi?email=${encodeURIComponent(hasil.data.email)}&alasan=belum-verifikasi`);
     }
     return { galat: 'Email atau kata sandi salah. Silakan periksa kembali.' };
   }
 
   // Bila akun mewajibkan autentikasi dua langkah, selesaikan dulu langkah kedua.
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  if (aal?.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
-    redirect(`/masuk/dua-langkah?lanjut=${encodeURIComponent(lanjut)}`);
+  if (DUA_LANGKAH_ADMIN_AKTIF) {
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal?.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
+      redirect(`/masuk/dua-langkah?lanjut=${encodeURIComponent(lanjut)}`);
+    }
   }
 
   const { data: profil } = await supabase

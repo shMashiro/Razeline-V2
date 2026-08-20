@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { FormDuaLangkah } from '@/components/form-dua-langkah';
 import { Icon } from '@/components/icon';
 import { ambilPengguna } from '@/lib/auth';
+import { DUA_LANGKAH_ADMIN_AKTIF } from '@/lib/fitur';
 import { bacaParam, type ParamPencarian } from '@/lib/url';
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default async function HalamanDuaLangkah({
 }: {
   searchParams: Promise<ParamPencarian>;
 }) {
+  if (!DUA_LANGKAH_ADMIN_AKTIF) redirect('/admin');
   if (!(await ambilPengguna())) redirect('/masuk');
 
   const params = await searchParams;

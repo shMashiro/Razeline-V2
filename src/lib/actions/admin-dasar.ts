@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { ambilProfil } from '@/lib/auth';
+import { DUA_LANGKAH_ADMIN_AKTIF } from '@/lib/fitur';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { StatusForm } from '@/lib/types';
 
@@ -16,10 +17,12 @@ export async function pastikanAdmin(): Promise<StatusAdmin | null> {
     return { galat: 'Anda tidak memiliki akses ke tindakan ini.' };
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  if (aal?.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
-    return { galat: 'Selesaikan verifikasi dua langkah terlebih dahulu.' };
+  if (DUA_LANGKAH_ADMIN_AKTIF) {
+    const supabase = await createSupabaseServerClient();
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal?.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
+      return { galat: 'Selesaikan verifikasi dua langkah terlebih dahulu.' };
+    }
   }
 
   return null;

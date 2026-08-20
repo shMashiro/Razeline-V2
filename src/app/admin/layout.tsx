@@ -8,6 +8,7 @@ import { Icon } from '@/components/icon';
 import { Logo } from '@/components/logo';
 import { keluar } from '@/lib/actions/auth';
 import { statusDuaLangkah, wajibAdmin } from '@/lib/auth';
+import { DUA_LANGKAH_ADMIN_AKTIF } from '@/lib/fitur';
 import { ambilPengaturanToko } from '@/lib/queries';
 
 export const metadata: Metadata = {
@@ -17,13 +18,16 @@ export const metadata: Metadata = {
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const profil = await wajibAdmin();
-  const keamanan = await statusDuaLangkah();
   const pengaturan = await ambilPengaturanToko();
 
-  // Admin wajib mengaktifkan autentikasi dua langkah sebelum mengelola toko.
-  const jalur = (await headers()).get('x-pathname') ?? '';
-  if (!keamanan.aktif && !jalur.startsWith('/admin/keamanan')) {
-    redirect('/admin/keamanan?wajib=1');
+  // Bila fitur dua langkah menyala, admin wajib mendaftarkan autentikator
+  // sebelum halaman lain bisa dibuka.
+  if (DUA_LANGKAH_ADMIN_AKTIF) {
+    const keamanan = await statusDuaLangkah();
+    const jalur = (await headers()).get('x-pathname') ?? '';
+    if (!keamanan.aktif && !jalur.startsWith('/admin/keamanan')) {
+      redirect('/admin/keamanan?wajib=1');
+    }
   }
 
   return (

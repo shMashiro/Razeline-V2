@@ -4,6 +4,7 @@ import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 
+import { DUA_LANGKAH_ADMIN_AKTIF } from '@/lib/fitur';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Profil } from '@/lib/types';
 
@@ -52,11 +53,13 @@ export async function wajibAdmin(): Promise<Profil> {
     redirect('/');
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (DUA_LANGKAH_ADMIN_AKTIF) {
+    const supabase = await createSupabaseServerClient();
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
-  if (aal?.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
-    redirect('/masuk/dua-langkah');
+    if (aal?.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
+      redirect('/masuk/dua-langkah');
+    }
   }
 
   return profil;

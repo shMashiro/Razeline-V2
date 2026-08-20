@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { FormMasuk } from '@/components/form-masuk';
 import { Icon } from '@/components/icon';
 import { ambilProfil } from '@/lib/auth';
+import { DUA_LANGKAH_ADMIN_AKTIF } from '@/lib/fitur';
 import { bacaParam, type ParamPencarian } from '@/lib/url';
 
 export const metadata: Metadata = {
@@ -37,11 +38,13 @@ export default async function HalamanMasuk({
 
       <FormMasuk lanjut={lanjut} />
 
-      <p className="mt-6 flex items-start gap-2 rounded-lg bg-surface-2 px-3.5 py-3 text-xs leading-relaxed text-ink-500">
-        <Icon name="perisai" size={15} className="mt-0.5 shrink-0 text-brand-600" />
-        Akun admin wajib melewati verifikasi dua langkah dengan aplikasi autentikator setiap kali
-        masuk.
-      </p>
+      {DUA_LANGKAH_ADMIN_AKTIF && (
+        <p className="mt-6 flex items-start gap-2 rounded-lg bg-surface-2 px-3.5 py-3 text-xs leading-relaxed text-ink-500">
+          <Icon name="perisai" size={15} className="mt-0.5 shrink-0 text-brand-600" />
+          Akun admin wajib melewati verifikasi dua langkah dengan aplikasi autentikator setiap kali
+          masuk.
+        </p>
+      )}
     </div>
   );
 }
