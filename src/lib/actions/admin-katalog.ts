@@ -255,7 +255,7 @@ export async function unggahGambar(formData: FormData): Promise<HasilUnggah> {
   // Folder dibatasi daftar tetap agar tidak bisa dipakai menulis ke mana saja.
   const folderDiminta = formData.get('folder');
   const folder =
-    typeof folderDiminta === 'string' && ['produk', 'kategori', 'banner'].includes(folderDiminta)
+    typeof folderDiminta === 'string' && ['produk', 'kategori', 'banner', 'toko'].includes(folderDiminta)
       ? folderDiminta
       : 'produk';
 
@@ -273,4 +273,60 @@ export async function unggahGambar(formData: FormData): Promise<HasilUnggah> {
 
   const { data } = admin.storage.from('media').getPublicUrl(nama);
   return { ok: true, url: data.publicUrl };
+}
+
+/* --------------------------- Aksi massal produk --------------------------- */
+
+export type AksiMassal = 'hapus' | 'stok-habis' | 'nonaktifkan' | 'aktifkan';
+
+const skemaAksiMassal = z.object({
+  ids: z.array(z.uuid()).min(1, 'Belum ada produk yang dipilih.').max(200),
+  aksi: z.enum(['hapus', 'stok-habis', 'nonaktifkan', 'aktifkan']),
+});
+
+/**
+ * Menjalankan satu tindakan untuk banyak produk sekaligus.
+ *
+ * Menghapus produk tidak menghilangkan riwayat pesanan: nama, harga, dan
+ * jumlah pada pesanan lama disimpan sebagai salinan tersendiri.
+ */
+export async function aksiMassalProduk(ids: string[], aksi: AksiMassal): Promise<StatusAdmin> {
+  const ditolak = await pastikanAdmin();
+  if (ditolak) return ditolak;
+
+  const hasil = skemaAksiMassal.safeParse({ ids, aksi });
+  if (!hasil.success) return { galat: pesanGalat(hasil.error) };
+
+  const admin = createSupabaseAdminClient();
+  const terpilih = hasil.data.ids;
+
+  const jalankan = async () => {
+    switch (hasil.data.aksi) {
+      case 'hapus':
+        return admin.from('products').delete().in('id', terpilih).select('id');
+      case 'stok-habis':
+        return admin.from('products').update({ stock: 0 }).in('id', terpilih).select('id');
+      case 'nonaktifkan':
+        return admin.from('products').update({ is_active: false }).in('id', terpilih).select('id');
+      case 'aktifkan':
+        return admin.from('products').update({ is_active: true }).in('id', terpilih).select('id');
+    }
+  };
+
+  const { data, error } = await jalankan();
+
+  if (error) {
+    return { galat: 'Tindakan gagal dijalankan. Silakan muat ulang halaman lalu coba lagi.' };
+  }
+
+  const jumlah = data?.length ?? 0;
+  const keterangan: Record<AksiMassal, string> = {
+    hapus: `${jumlah} produk dihapus.`,
+    'stok-habis': `Stok ${jumlah} produk diubah menjadi 0.`,
+    nonaktifkan: `${jumlah} produk disembunyikan dari katalog.`,
+    aktifkan: `${jumlah} produk ditampilkan kembali di katalog.`,
+  };
+
+  segarkanKatalog();
+  return { info: keterangan[hasil.data.aksi] };
 }

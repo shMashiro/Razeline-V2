@@ -40,15 +40,28 @@ dan Tailwind CSS v4. Ditujukan untuk dijalankan di Vercel.
 | Akun | Ubah data diri dan kelola beberapa alamat pengiriman |
 | Bantuan | Panduan belanja, pembayaran, pengiriman, garansi |
 
-Pemesanan bisa dilakukan **tanpa membuat akun**. Setelah pesanan tercatat, pembeli
-diarahkan ke WhatsApp admin dengan pesan konfirmasi yang sudah terisi lengkap.
+Pemesanan bisa dilakukan **tanpa membuat akun**. Setelah pesanan tercatat,
+pembeli mendapat tombol konfirmasi WhatsApp berisi rincian pesanan yang sudah
+terisi lengkap. Tautannya dibuka di tab baru supaya halaman status pesanan —
+tempat kode pesanan dan nomor rekening tertera — tetap terbuka.
 
 ### Untuk admin
 
 Dasbor ringkasan, pengelolaan pesanan (status, status bayar, resi, catatan),
-produk (termasuk unggah foto dan spesifikasi), kategori, merek, banner, voucher,
-metode pengiriman, metode pembayaran, ulasan, pengguna, pengaturan toko, dan
-pengaturan keamanan akun.
+produk, kategori, merek, banner, voucher, metode pengiriman, metode pembayaran,
+ulasan, pengguna, pengaturan toko, dan pengaturan keamanan akun.
+
+Beberapa hal yang sering dipakai:
+
+- **Identitas toko.** Logo, nama, alamat, jam buka, nomor WhatsApp, dan
+  pengumuman header semuanya diatur di **Admin → Pengaturan Toko**. Logo yang
+  diunggah langsung menggantikan lambang bawaan di header, footer, halaman
+  masuk, dan panel admin.
+- **Tindakan massal produk.** Di **Admin → Produk**, centang beberapa produk
+  (atau pakai kotak "pilih semua" di kepala tabel) untuk menandai stok habis,
+  menyembunyikan, menampilkan kembali, atau menghapusnya sekaligus.
+- **Foto kategori dan banner** diunggah langsung dari panelnya masing-masing,
+  tanpa perlu menempel URL.
 
 ---
 
@@ -108,6 +121,13 @@ Perintah ini menjalankan dua berkas:
 > `schema.sql` bersifat merusak. Jalankan hanya pada proyek Supabase yang memang
 > disiapkan untuk toko ini. Untuk mengisi ulang data contoh saja, gunakan
 > `npm run db:seed`.
+
+Bila database sudah berisi pesanan sungguhan, jangan jalankan `db:reset`.
+Pakai berkas di `supabase/migrasi/` yang aman dijalankan berulang:
+
+```bash
+node scripts/run-sql.mjs supabase/migrasi/2026-08-20-logo-dan-nama-ulasan.sql
+```
 
 Bila setelah migrasi API Supabase sempat menjawab
 `Could not find the table ... in the schema cache`, tunggu sekitar satu menit —
@@ -174,6 +194,7 @@ src/
 supabase/
   schema.sql         Struktur database + kebijakan keamanan
   seed.sql           Data awal toko
+  migrasi/           Perubahan struktur untuk database yang sudah berjalan
 scripts/
   run-sql.mjs        Penjalan berkas SQL
   buat-admin.mjs     Pembuat akun admin

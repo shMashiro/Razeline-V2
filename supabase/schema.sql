@@ -194,6 +194,9 @@ create table public.reviews (
   id          uuid primary key default extensions.gen_random_uuid(),
   product_id  uuid not null references public.products(id) on delete cascade,
   user_id     uuid not null references public.profiles(id) on delete cascade,
+  -- Nama penulis disimpan langsung agar halaman produk tidak perlu
+  -- membaca tabel profiles yang tertutup untuk pengunjung.
+  author_name text not null default '',
   order_id    uuid,
   rating      int not null check (rating between 1 and 5),
   comment     text not null default '',
@@ -293,6 +296,7 @@ create table public.banners (
 create table public.store_settings (
   id                int primary key default 1 check (id = 1),
   store_name        text not null default 'Razeline Komputer',
+  logo_url          text,
   tagline           text not null default '',
   address           text not null default '',
   whatsapp          text not null default '',

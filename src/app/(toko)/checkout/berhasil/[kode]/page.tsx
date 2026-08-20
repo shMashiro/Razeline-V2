@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { DetailPesanan } from '@/components/detail-pesanan';
 import { Icon } from '@/components/icon';
-import { PengalihanWhatsApp } from '@/components/pengalihan-whatsapp';
+import { KonfirmasiWhatsApp } from '@/components/konfirmasi-whatsapp';
 import { SITE_URL } from '@/lib/env';
 import { ambilPesananPerKode } from '@/lib/pesanan';
 import { ambilPengaturanToko } from '@/lib/queries';
@@ -57,7 +57,7 @@ export default async function HalamanPesananBerhasil({
 
       {tautanWa && (
         <div className="mb-6">
-          <PengalihanWhatsApp tautan={tautanWa} />
+          <KonfirmasiWhatsApp tautan={tautanWa} />
         </div>
       )}
 

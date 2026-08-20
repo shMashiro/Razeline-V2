@@ -2,13 +2,16 @@ import Link from 'next/link';
 
 import { Icon } from '@/components/icon';
 import { Logo } from '@/components/logo';
+import { ambilPengaturanToko } from '@/lib/queries';
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default async function AuthLayout({ children }: { children: React.ReactNode }) {
+  const pengaturan = await ambilPengaturanToko();
+
   return (
     <div className="flex min-h-dvh flex-col bg-surface-2">
       <header className="border-b bg-white">
         <div className="container-page flex h-16 items-center justify-between">
-          <Logo />
+          <Logo logoUrl={pengaturan.logo_url} namaToko={pengaturan.store_name} />
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-500 hover:text-brand-600"
@@ -25,7 +28,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       <footer className="border-t bg-white py-5">
         <p className="container-page text-center text-xs text-ink-500">
-          &copy; {new Date().getFullYear()} Razeline Komputer — Cibeber, Kabupaten Lebak, Banten
+          &copy; {new Date().getFullYear()} {pengaturan.store_name}
         </p>
       </footer>
     </div>

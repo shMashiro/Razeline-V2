@@ -38,6 +38,7 @@ function catatGalat(asal: string, error: { message: string; code?: string } | nu
 
 const PENGATURAN_BAWAAN: PengaturanToko = {
   store_name: 'Razeline Komputer',
+  logo_url: null,
   tagline: '',
   address: '',
   whatsapp: '',
@@ -278,7 +279,7 @@ export async function ambilUlasanProduk(productId: string, batas = 20): Promise<
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from('reviews')
-    .select('id, product_id, user_id, rating, comment, created_at, profiles(full_name)')
+    .select('id, product_id, user_id, author_name, rating, comment, created_at')
     .eq('product_id', productId)
     .eq('is_approved', true)
     .order('created_at', { ascending: false })

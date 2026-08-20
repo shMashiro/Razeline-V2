@@ -366,11 +366,11 @@ export default async function HalamanDetailProduk({ params }: Props) {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-50 text-sm font-bold text-brand-600">
-                        {(item.profiles?.full_name || 'P').charAt(0).toUpperCase()}
+                        {(item.author_name || 'P').charAt(0).toUpperCase()}
                       </span>
                       <div>
                         <p className="text-sm font-semibold">
-                          {item.profiles?.full_name || 'Pelanggan'}
+                          {item.author_name || 'Pelanggan'}
                         </p>
                         <RatingBintang nilai={item.rating} size={13} />
                       </div>

@@ -40,10 +40,18 @@ export async function kirimUlasan(masukan: unknown): Promise<HasilUlasan> {
   }
 
   const admin = createSupabaseAdminClient();
+
+  const { data: profil } = await admin
+    .from('profiles')
+    .select('full_name')
+    .eq('id', pengguna.id)
+    .maybeSingle();
+
   const { error } = await admin.from('reviews').upsert(
     {
       product_id: hasil.data.product_id,
       user_id: pengguna.id,
+      author_name: profil?.full_name?.trim() || 'Pelanggan',
       rating: hasil.data.rating,
       comment: hasil.data.comment,
     },

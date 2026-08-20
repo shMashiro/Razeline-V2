@@ -180,6 +180,7 @@ export const skemaPembayaranAdmin = z.object({
 
 export const skemaPengaturanToko = z.object({
   store_name: teks(2, 80, 'Nama toko'),
+  logo_url: z.union([z.url(), z.literal('')]).default(''),
   tagline: z.string().trim().max(160).default(''),
   address: teks(10, 300, 'Alamat toko'),
   whatsapp: z.string().trim().max(20).default(''),

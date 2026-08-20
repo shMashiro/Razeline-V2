@@ -20,7 +20,7 @@ export async function SiteFooter() {
     <footer className="mt-16 border-t bg-surface-2">
       <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
-          <Logo />
+          <Logo logoUrl={pengaturan.logo_url} namaToko={pengaturan.store_name} />
           <p className="text-sm leading-relaxed text-ink-500">
             {pengaturan.tagline ||
               'Toko komputer dan elektronik dengan harga terjangkau serta garansi resmi.'}

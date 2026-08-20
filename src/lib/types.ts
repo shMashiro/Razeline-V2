@@ -96,10 +96,11 @@ export interface Ulasan {
   id: string;
   product_id: string;
   user_id: string;
+  /** Nama penulis disimpan langsung supaya halaman produk tidak perlu membaca tabel profiles. */
+  author_name: string;
   rating: number;
   comment: string;
   created_at: string;
-  profiles: { full_name: string } | null;
 }
 
 export interface MetodePengiriman {
@@ -151,6 +152,7 @@ export interface Banner {
 
 export interface PengaturanToko {
   store_name: string;
+  logo_url: string | null;
   tagline: string;
   address: string;
   whatsapp: string;

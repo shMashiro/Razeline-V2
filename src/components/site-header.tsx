@@ -45,7 +45,7 @@ export async function SiteHeader() {
       {/* Baris utama */}
       <div className="container-page flex h-16 items-center gap-2 sm:gap-4">
         <MenuMobile kategori={kategori} profil={profil} />
-        <Logo />
+        <Logo logoUrl={pengaturan.logo_url} namaToko={pengaturan.store_name} />
 
         <form action="/katalog" method="get" role="search" className="ml-auto hidden flex-1 md:block">
           <div className="relative mx-auto max-w-xl">

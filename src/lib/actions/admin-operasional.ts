@@ -279,6 +279,7 @@ export async function simpanPengaturan(
 
   const hasil = skemaPengaturanToko.safeParse({
     store_name: teks(formData, 'store_name'),
+    logo_url: teks(formData, 'logo_url'),
     tagline: teks(formData, 'tagline'),
     address: teks(formData, 'address'),
     whatsapp: teks(formData, 'whatsapp'),
@@ -294,9 +295,12 @@ export async function simpanPengaturan(
   if (!hasil.success) return { galat: pesanGalat(hasil.error) };
 
   const admin = createSupabaseAdminClient();
-  const { error } = await admin
-    .from('store_settings')
-    .upsert({ id: 1, ...hasil.data, updated_at: new Date().toISOString() });
+  const { error } = await admin.from('store_settings').upsert({
+    id: 1,
+    ...hasil.data,
+    logo_url: hasil.data.logo_url || null,
+    updated_at: new Date().toISOString(),
+  });
 
   if (error) return { galat: 'Pengaturan gagal disimpan.' };
 

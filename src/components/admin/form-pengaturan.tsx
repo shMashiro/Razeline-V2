@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 
+import { BidangGambar } from '@/components/admin/bidang-gambar';
 import { PesanForm } from '@/components/pesan-form';
 import { simpanPengaturan } from '@/lib/actions/admin-operasional';
 import type { PengaturanToko, StatusForm } from '@/lib/types';
@@ -24,6 +25,18 @@ export function FormPengaturan({ pengaturan }: { pengaturan: PengaturanToko }) {
       <PesanForm galat={status.galat} info={status.info} />
 
       <Bagian judul="Identitas Toko" keterangan="Muncul di header, footer, dan judul halaman.">
+        <div className="sm:col-span-2">
+          <BidangGambar
+            nama="logo_url"
+            label="Logo toko"
+            folder="toko"
+            rasio="persegi"
+            latarTerang
+            urlAwal={pengaturan.logo_url ?? ''}
+            bantuan="Tampil di header dan footer. Paling rapi berbentuk persegi dengan latar transparan (PNG atau WebP), minimal 128 x 128 piksel. Bila dikosongkan, dipakai lambang bawaan."
+          />
+        </div>
+
         <label>
           <span className="label">Nama toko</span>
           <input name="store_name" required maxLength={80} className="field" defaultValue={pengaturan.store_name} />

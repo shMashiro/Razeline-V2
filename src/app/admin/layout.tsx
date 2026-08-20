@@ -8,6 +8,7 @@ import { Icon } from '@/components/icon';
 import { Logo } from '@/components/logo';
 import { keluar } from '@/lib/actions/auth';
 import { statusDuaLangkah, wajibAdmin } from '@/lib/auth';
+import { ambilPengaturanToko } from '@/lib/queries';
 
 export const metadata: Metadata = {
   title: { default: 'Dasbor Admin', template: '%s | Admin Razeline' },
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const profil = await wajibAdmin();
   const keamanan = await statusDuaLangkah();
+  const pengaturan = await ambilPengaturanToko();
 
   // Admin wajib mengaktifkan autentikasi dua langkah sebelum mengelola toko.
   const jalur = (await headers()).get('x-pathname') ?? '';
@@ -29,7 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="sticky top-0 z-40 border-b bg-white">
         <div className="mx-auto flex h-16 max-w-[100rem] items-center gap-3 px-4 sm:px-6">
           <MenuAdminMobile />
-          <Logo />
+          <Logo logoUrl={pengaturan.logo_url} namaToko={pengaturan.store_name} />
           <span className="hidden rounded-md bg-brand-50 px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-700 sm:inline">
             Panel Admin
           </span>
