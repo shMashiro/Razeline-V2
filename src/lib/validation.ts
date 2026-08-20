@@ -91,6 +91,7 @@ export const skemaKategoriAdmin = z.object({
     .regex(/^[a-z0-9-]+$/, 'Slug hanya boleh huruf kecil, angka, dan tanda hubung.')
     .max(80),
   description: z.string().trim().max(300).default(''),
+  image_url: z.union([z.url(), z.literal('')]).default(''),
   icon: z.string().trim().max(30).default('box'),
   sort_order: z.coerce.number().int().min(0).max(999).default(0),
   is_active: z.boolean().default(true),

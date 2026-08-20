@@ -12,7 +12,8 @@
     "db:seed": "node scripts/run-sql.mjs supabase/seed.sql",
     "db:setup": "npm run db:reset && npm run db:seed",
     "admin:buat": "node scripts/buat-admin.mjs",
-    "uji:keamanan": "node scripts/uji-keamanan.mjs"
+    "uji:keamanan": "node scripts/uji-keamanan.mjs",
+    "admin:reset": "node scripts/reset-admin.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

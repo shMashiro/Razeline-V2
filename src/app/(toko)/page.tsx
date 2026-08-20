@@ -2,7 +2,8 @@ import Link from 'next/link';
 
 import { BarisProduk } from '@/components/baris-produk';
 import { CarouselBanner } from '@/components/carousel-banner';
-import { Icon, IKON_KATEGORI } from '@/components/icon';
+import { GambarKategori } from '@/components/gambar-kategori';
+import { Icon } from '@/components/icon';
 import {
   ambilBanner,
   ambilKategori,
@@ -69,17 +70,23 @@ export default async function Beranda() {
           </Link>
         </div>
 
-        <ul className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-6">
+        <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
           {kategori.slice(0, 12).map((item) => (
             <li key={item.id}>
               <Link
                 href={`/kategori/${item.slug}`}
-                className="flex h-full flex-col items-center gap-2 rounded-xl2 border border-line bg-white px-2 py-4 text-center transition-colors hover:border-brand-300 hover:bg-brand-50"
+                className="group block h-full overflow-hidden rounded-xl2 border border-line bg-white transition-colors hover:border-brand-300"
               >
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-brand-50 text-brand-600">
-                  <Icon name={IKON_KATEGORI[item.icon] ?? 'kotak'} size={22} />
+                <span className="relative block aspect-square overflow-hidden bg-surface-2">
+                  <GambarKategori
+                    url={item.image_url}
+                    nama={item.name}
+                    sizes="(max-width: 640px) 30vw, (max-width: 1024px) 22vw, 180px"
+                  />
                 </span>
-                <span className="text-xs font-medium leading-tight text-ink-700">{item.name}</span>
+                <span className="block px-2 py-2.5 text-center text-xs font-medium leading-tight text-ink-700 transition-colors group-hover:text-brand-600">
+                  {item.name}
+                </span>
               </Link>
             </li>
           ))}

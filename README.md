@@ -29,7 +29,7 @@ dan Tailwind CSS v4. Ditujukan untuk dijalankan di Vercel.
 | Halaman | Isi |
 | --- | --- |
 | Beranda | Carousel promo, pintasan kategori, alasan memilih toko, baris produk unggulan / terlaris / terbaru / terpopuler |
-| Kategori | Seluruh kategori elektronik beserta jumlah produknya |
+| Kategori | Seluruh kategori elektronik dalam bentuk kartu berfoto beserta jumlah produknya |
 | Daftar kategori | Pencarian, filter merek, rentang harga (termasuk filter cepat), kondisi barang, ketersediaan stok, dan enam pilihan urutan |
 | Katalog | Sama seperti daftar kategori, tetapi mencakup seluruh kategori sekaligus |
 | Detail produk | Galeri foto, rating, stok, garansi, spesifikasi, deskripsi, ulasan pembeli, wishlist, keranjang, tanya via WhatsApp |
@@ -142,6 +142,17 @@ Setelah itu:
 
 Sejak saat itu, setiap kali masuk, admin akan diminta kode dari aplikasi
 autentikator.
+
+### Kehilangan akses admin
+
+Bila ponsel yang menyimpan aplikasi autentikator hilang, atau kata sandi lupa:
+
+```bash
+npm run admin:reset -- admin@razelinekomputer.id                       # hapus 2FA saja
+npm run admin:reset -- admin@razelinekomputer.id "KataSandiBaru123"    # sekaligus ganti sandi
+```
+
+Setelah itu masuk kembali dan daftarkan autentikator baru di `/admin/keamanan`.
 
 ---
 
@@ -270,16 +281,21 @@ toko yang sudah berjalan, pasang SMTP sendiri di
 | `npm run db:reset` | Reset struktur database saja |
 | `npm run db:seed` | Isi ulang data contoh saja |
 | `npm run admin:buat` | Membuat atau mengangkat akun admin |
+| `npm run admin:reset` | Menghapus pendaftaran 2FA dan/atau mengganti kata sandi admin |
 | `npm run uji:keamanan` | Menguji kebijakan Row Level Security |
 
 ---
 
 ## Catatan perawatan
 
-- **Foto produk.** Produk contoh sengaja dibiarkan tanpa foto; yang tampil adalah
-  kotak inisial yang rapi. Unggah foto asli lewat **Admin → Produk → Ubah**.
-  Berkas disimpan di bucket Supabase Storage bernama `media`, maksimal 5 MB per
-  gambar.
+- **Foto produk & kategori.** Data contoh sengaja dibiarkan tanpa foto; yang
+  tampil adalah blok warna rapi berisi nama, bukan gambar rusak. Unggah foto
+  asli lewat **Admin → Produk → Ubah** dan **Admin → Kategori → Ubah**. Berkas
+  disimpan di bucket Supabase Storage bernama `media` (folder `produk/`,
+  `kategori/`, dan `banner/`), maksimal 5 MB per gambar.
+- **Ukuran foto yang disarankan.** Kategori dan banner memakai foto mendatar
+  (kategori sekitar 800 x 600 piksel, banner 1600 x 600 piksel). Foto produk
+  paling rapi bila berbentuk persegi dengan latar polos.
 - **Pengaturan toko.** Alamat, nomor WhatsApp, jam buka, minimum gratis ongkir,
   dan pengumuman di header semuanya diatur lewat **Admin → Pengaturan Toko**.
   Nomor WhatsApp di sanalah yang dipakai tombol konfirmasi pesanan.

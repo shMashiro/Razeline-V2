@@ -144,18 +144,20 @@ export async function simpanKategori(
     name: teks(formData, 'name'),
     slug: teks(formData, 'slug'),
     description: teks(formData, 'description'),
+    image_url: teks(formData, 'image_url'),
     icon: teks(formData, 'icon') || 'box',
     sort_order: teks(formData, 'sort_order') || 0,
     is_active: centang(formData, 'is_active'),
   });
   if (!hasil.success) return { galat: pesanGalat(hasil.error) };
 
+  const baris = { ...hasil.data, image_url: hasil.data.image_url || null };
   const id = teks(formData, 'id');
   const admin = createSupabaseAdminClient();
 
   const { error } = id
-    ? await admin.from('categories').update(hasil.data).eq('id', id)
-    : await admin.from('categories').insert(hasil.data);
+    ? await admin.from('categories').update(baris).eq('id', id)
+    : await admin.from('categories').insert(baris);
 
   if (error) {
     return {
@@ -250,8 +252,15 @@ export async function unggahGambar(formData: FormData): Promise<HasilUnggah> {
     return { ok: false, galat: 'Ukuran gambar maksimal 5 MB.' };
   }
 
+  // Folder dibatasi daftar tetap agar tidak bisa dipakai menulis ke mana saja.
+  const folderDiminta = formData.get('folder');
+  const folder =
+    typeof folderDiminta === 'string' && ['produk', 'kategori', 'banner'].includes(folderDiminta)
+      ? folderDiminta
+      : 'produk';
+
   const ekstensi = berkas.type.split('/')[1]?.replace('jpeg', 'jpg') ?? 'jpg';
-  const nama = `produk/${Date.now()}-${crypto.randomUUID()}.${ekstensi}`;
+  const nama = `${folder}/${Date.now()}-${crypto.randomUUID()}.${ekstensi}`;
 
   const admin = createSupabaseAdminClient();
   const { error } = await admin.storage.from('media').upload(nama, berkas, {

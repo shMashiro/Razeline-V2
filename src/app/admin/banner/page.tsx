@@ -27,8 +27,9 @@ export default async function HalamanAdminBanner() {
         { nama: 'subtitle', label: 'Kalimat pendukung', tipe: 'area', lebar: 'penuh' },
         {
           nama: 'image_url',
-          label: 'URL gambar latar',
-          tipe: 'url',
+          label: 'Gambar latar',
+          tipe: 'gambar',
+          folder: 'banner',
           lebar: 'penuh',
           bantuan: 'Kosongkan untuk memakai warna latar bawaan. Ukuran ideal 1600 x 600 piksel.',
         },

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { Icon, IKON_KATEGORI } from '@/components/icon';
+import { GambarKategori } from '@/components/gambar-kategori';
+import { Icon } from '@/components/icon';
 import { RemahRoti } from '@/components/remah-roti';
 import { angka } from '@/lib/format';
 import { ambilKategori } from '@/lib/queries';
@@ -40,33 +41,38 @@ export default async function HalamanKategori() {
         </p>
       </header>
 
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {kategori.map((item) => (
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {kategori.map((item, indeks) => (
           <li key={item.id}>
             <Link
               href={`/kategori/${item.slug}`}
-              className="group card flex h-full items-start gap-4 p-5 transition-colors hover:border-brand-300 hover:bg-brand-50/40"
+              className="group card flex h-full flex-col overflow-hidden transition-shadow hover:shadow-[0_2px_16px_rgb(16_24_40_/_0.1)]"
             >
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl2 bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white">
-                <Icon name={IKON_KATEGORI[item.icon] ?? 'kotak'} size={24} />
-              </span>
-
-              <span className="min-w-0 flex-1">
-                <span className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-ink-900">{item.name}</span>
-                  <Icon
-                    name="kanan"
-                    size={16}
-                    className="shrink-0 text-ink-300 transition-transform group-hover:translate-x-0.5 group-hover:text-brand-600"
-                  />
-                </span>
-                <span className="mt-1 block text-sm leading-relaxed text-ink-500">
-                  {item.description}
-                </span>
-                <span className="mt-2 inline-block rounded-md bg-surface-2 px-2 py-0.5 text-xs font-medium text-ink-500">
+              <div className="relative aspect-[16/9] overflow-hidden bg-surface-2">
+                <GambarKategori
+                  url={item.image_url}
+                  nama={item.name}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                  priority={indeks < 3}
+                />
+                <span className="absolute bottom-2 left-2 rounded-md bg-white/95 px-2 py-1 text-xs font-semibold text-ink-700 backdrop-blur-sm">
                   {angka(jumlahProduk.get(item.id) ?? 0)} produk
                 </span>
-              </span>
+              </div>
+
+              <div className="flex flex-1 flex-col p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <h2 className="font-semibold text-ink-900 transition-colors group-hover:text-brand-600">
+                    {item.name}
+                  </h2>
+                  <Icon
+                    name="kanan"
+                    size={17}
+                    className="mt-0.5 shrink-0 text-ink-300 transition-transform group-hover:translate-x-0.5 group-hover:text-brand-600"
+                  />
+                </div>
+                <p className="mt-1 text-sm leading-relaxed text-ink-500">{item.description}</p>
+              </div>
             </Link>
           </li>
         ))}
