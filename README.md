@@ -168,7 +168,7 @@ src/
   components/        Komponen antarmuka (admin/ untuk komponen khusus admin)
   lib/
     actions/         Server action: checkout, wishlist, ulasan, akun, admin
-    supabase/        Tiga jenis klien: server, browser, service role
+    supabase/        Dua jenis klien: server (kunci publik) dan service role
     queries.ts       Seluruh pembacaan data katalog
     validation.ts    Skema Zod untuk semua masukan pengguna
 supabase/
@@ -177,6 +177,7 @@ supabase/
 scripts/
   run-sql.mjs        Penjalan berkas SQL
   buat-admin.mjs     Pembuat akun admin
+  reset-admin.mjs    Pemulih akses admin (hapus 2FA / ganti sandi)
   uji-keamanan.mjs   Uji cepat kebijakan Row Level Security
 ```
 
